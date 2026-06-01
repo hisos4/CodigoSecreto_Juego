@@ -276,7 +276,11 @@ function gameActionBar(){
     '</div>'+
     (isMyTurn?'<div style="margin-left:auto;font-family:'+FD+';font-size:9px;color:'+P[ct.id].hi+';letter-spacing:1px;background:'+P[ct.id].bg+'88;padding:2px 8px;border-radius:2px;">TU TURNO</div>':'')+
   '</div>';
-  return teamBadge;
+  return teamBadge+'<div style="margin-top:12px;display:flex;gap:6px;"><button id="g-salir" class="btn dim" style="flex:1;background:none;border:1px solid #242018;border-radius:3px;color:'+DM+';font-family:'+FD+';font-size:13px;letter-spacing:2px;cursor:pointer;padding:8px 0;">SALIR</button></div>';
+}
+function bindGameBar(){
+  var el=$("#g-salir");
+  if(el)el.onclick=doSalir;
 }
 
 /* Tablero solo palabras: font 20px — el doble */
@@ -465,13 +469,14 @@ function renderGame(){
       st+'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:14px;">'+bd+'</div>'+
       lbl("INGRESÁ TU PISTA")+
       '<div style="display:flex;gap:8px;margin-bottom:5px;"><input id="cw" type="text" placeholder="PISTA" autocomplete="off" style="flex:1;background:#181410;border:1px solid #2A2418;color:'+CR+';font-family:'+FD+';font-size:22px;letter-spacing:2px;padding:11px 12px;border-radius:4px;outline:none;"><input id="cn" type="number" min="1" max="9" value="'+clueN+'" style="width:60px;background:#181410;border:1px solid #2A2418;color:'+CR+';font-family:'+FD+';font-size:28px;padding:11px 6px;border-radius:4px;outline:none;text-align:center;"></div>'+
-      '<div style="font-size:11px;color:#3E3220;margin-bottom:12px;">No puede ser ninguna palabra del tablero.</div>'+
+      '<div style="font-size:11px;color:#3E3220;margin-bottom:8px;">No puede ser ninguna palabra del tablero.</div>'+
+      '<div id="g-ce" style="font-size:11px;color:#CC4444;margin-bottom:8px;display:none;"></div>'+
       '<button id="g-cf" class="btn" style="width:100%;background:'+tc.bg+';color:'+tc.tx+';font-family:'+FD+';font-size:20px;letter-spacing:2px;padding:13px;border:none;border-radius:4px;cursor:pointer;">CONFIRMAR PISTA →</button>'
     );
     bindGameBar();
-    var sub=function(){var w=($("#cw").value||"").trim().toUpperCase();var n=Math.max(1,Math.min(9,+$("#cn").value||1));clueW="";clueN="1";if(w)action({t:"clue",w:w,n:n});};
+    var sub=function(){var w=($("#cw").value||"").trim().toUpperCase();var n=Math.max(1,Math.min(9,+$("#cn").value||1));var err=$("#g-ce");if(err)err.style.display='none';clueW="";clueN="1";if(!w)return;if(gs.board.some(function(c){return c.w===w;})){if(err){err.textContent='LA PISTA NO PUEDE SER UNA PALABRA DEL TABLERO';err.style.display='block';}$("#cw").focus();return;}action({t:"clue",w:w,n:n});};
     $("#g-cf").onclick=sub;
-    if($("#cw"))$("#cw").addEventListener("keydown",function(e){if(e.key==="Enter")sub();});
+    if($("#cw")){$("#cw").addEventListener("keydown",function(e){if(e.key==="Enter")sub();});$("#cw").addEventListener("input",function(){var e=$("#g-ce");if(e)e.style.display='none';});}
     return;
   }
 
