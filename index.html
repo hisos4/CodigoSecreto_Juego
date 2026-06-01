@@ -312,6 +312,23 @@ function wordBoard(board,clickable){
   }).join("");
 }
 
+/* -- Password screen -- */
+function renderPass(){
+  mount(
+    '<div style="font-family:'+FD+';font-size:80px;line-height:.83;letter-spacing:5px;text-align:center;margin-bottom:8px;">EL<br>CODIGO</div>'+
+    '<div style="font-family:'+FD+';font-size:80px;letter-spacing:5px;color:'+'#D8A800'+';text-align:center;margin-bottom:6px;">SECRETO</div>'+
+    '<div style="font-family:'+FS+';font-size:11px;color:'+DM+';text-align:center;font-style:italic;margin-bottom:36px;">si la china no esta, juga aca</div>'+
+    lbl("CONTRASENA")+
+    '<input id="pw" type="password" placeholder="........" style="'+inpS+'margin-bottom:6px;letter-spacing:3px;text-align:center;" autocomplete="off">'+
+    (passErr?'<div style="font-size:12px;color:#CC4444;margin-bottom:12px;font-family:'+FD+';letter-spacing:1px;">'+passErr+'</div>':'<div style="margin-bottom:12px;"></div>')+
+    pBtn("ENTRAR ->","pw-ok",CR,BG,0),true
+  );
+  var go=function(){if(!SND)initSound();var v=document.getElementById("pw").value;if(v===GAME_PASS){authenticated=true;render();}else{passErr="Contrasena incorrecta.";renderPass();}};
+  $("#pw-ok").onclick=go;
+  document.getElementById("pw").addEventListener("keydown",function(e){if(e.key==="Enter")go();});
+}
+
+
 function renderHome(){
   mount(
     '<div style="display:flex;gap:10px;margin-bottom:48px;">'+["red","blue"].map(function(id){return '<div style="width:10px;height:10px;background:'+P[id].hi+';border-radius:50%;"></div>';}).join("")+'</div>'+
