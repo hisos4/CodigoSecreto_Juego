@@ -23,10 +23,24 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .card{transition:filter .12s,transform .12s;cursor:pointer}
 .card:hover:not(.done){filter:brightness(1.3);transform:scale(1.04)}
-.card.done{cursor:default;opacity:.42}
+
 .card-ro{cursor:default}
 .btn:active{transform:scale(.97)}
 .dim:hover{opacity:.75}
+
+/* -- Flash animations -- */
+@keyframes flashCorrect{0%{background:#3A8A3A!important}40%{background:#3A8A3A!important}100%{background:var(--final-bg,#1A5A1A)}}
+@keyframes flashWrong{0%{background:#8A2A2A!important}40%{background:#8A2A2A!important}100%{background:var(--final-bg,#5A1A1A)}}
+@keyframes flashAssassin{0%{background:#CC0000!important;transform:scale(1.06)}30%{background:#CC0000!important;transform:scale(1.06)}100%{background:var(--final-bg,#080604);transform:scale(1)}}
+.card-flash-correct{animation:flashCorrect .55s ease-out}
+.card-flash-wrong{animation:flashWrong .55s ease-out}
+.card-flash-assassin{animation:flashAssassin .6s ease-out}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease-out}
+@media(max-width:600px){#root>div{padding:12px 8px!important}.word-grid{gap:3px!important}.word-card{min-height:76px!important;padding:5px 3px!important}.word-card>div{font-size:16px!important}.spy-card{min-height:64px!important}.spy-card>div{font-size:14px!important}}
+@media(max-width:400px){#root>div{padding:8px 4px!important}.word-grid{gap:2px!important}.word-card{min-height:64px!important;padding:3px 2px!important}.word-card>div{font-size:13px!important}.spy-card{min-height:52px!important}.spy-card>div{font-size:12px!important}input{font-size:16px!important;padding:8px!important}}
+@media(min-width:768px){.word-card{min-height:110px!important}.word-card>div{font-size:26px!important}}
+
 </style>
 </head>
 <body>
@@ -40,12 +54,10 @@ var FD="'Bebas Neue',Impact,sans-serif",FS="'Lora',Georgia,serif";
 var P={
   red:    {bg:"#A81808",hi:"#D82010",tx:"#fff",nm:"ROJO"},
   blue:   {bg:"#0C22A8",hi:"#1438D8",tx:"#fff",nm:"AZUL"},
-  yellow: {bg:"#A88000",hi:"#D8A800",tx:"#0A0908",nm:"AMARILLO"},
-  green:  {bg:"#0A5814",hi:"#12881E",tx:"#fff",nm:"VERDE"},
   neutral:{bg:"#1A1814",hi:"#1A1814",tx:"#5A4830",bd:"#2A2620"},
   assassin:{bg:"#080604",hi:"#080604",tx:"#C80000",bd:"#7A0000"},
 };
-var WORDS=[...new Set(["ASADO","MATE","EMPANADA","ALFAJOR","LOCRO","CHIMICHURRI","CHORIPÁN","DULCE DE LECHE","MEDIALUNAS","FACTURAS","MILANESA","HUMITA","MATAMBRE","VACÍO","ENTRAÑA","MORCILLA","BIFE","COSTILLAS","FERNET","MALBEC","TORRONTÉS","BONARDA","MOSCATO","CLERICÓ","TERERÉ","SUBMARINO","CORTADO","FLAN","PASTA FROLA","ROGEL","CHOCOTORTA","BUDÍN","PIONONO","PROVOLETA","FUGAZZA","RICOTA","NAPOLITANA","CHIPÁ","MONDONGO","PUCHERO","CARBONADA","CAÑONCITO","MERENGUES","VIGILANTE","SORRENTINOS","ÑOQUIS","TALLARINES","CANELONES","CUADRIL","PALETA","VITEL TONÉ","MATAMBRITO","TANGO","MILONGA","CUMBIA","FOLKLORE","CHAMAMÉ","CUARTETO","MURGA","BANDONÉON","MALAMBO","ZAMBA","CHACARERA","LUNFARDO","QUILOMBO","CHAMUYO","FIACA","AGUANTE","PIOLA","COPADO","ZARPADO","BERRETA","TRUCHO","CARETA","CHANTA","PIBE","MINA","CHABÓN","BONDI","COLECTIVO","SUBTE","KIOSCO","CANILLITA","BOLICHE","ESTANCIA","FARRUCO","GAUCHESCO","SAINETE","CONVENTILLO","CANYENGUE","PULPERÍA","ALMACÉN","GAUCHO","FACÓN","OMBÚ","HORNERO","CARPINCHO","YACARÉ","VIZCACHA","RANCHO","PAYADOR","MATEADA","PARRILLA","BRASERO","DAMAJUANA","PATAGONIA","PAMPAS","MENDOZA","BARILOCHE","IGUAZÚ","CALAFATE","USHUAIA","SALTA","JUJUY","TUCUMÁN","CÓRDOBA","ROSARIO","MAR DEL PLATA","NEUQUÉN","CATAMARCA","MISIONES","CORRIENTES","ENTRE RÍOS","SANTA FE","LA PAMPA","RÍO NEGRO","CHUBUT","SANTA CRUZ","TIERRA DEL FUEGO","ACONCAGUA","LANÍN","IBERÁ","PUNA","QUEBRADA","LITORAL","MESOPOTAMIA","CUYO","NOA","CHACO","FORMOSA","PINAMAR","MIRAMAR","SAN JUAN","SAN LUIS","LA PLATA","RESISTENCIA","POSADAS","PARANÁ","VILLA GESELL","NAHUEL HUAPI","MARADONA","MESSI","SAN MARTÍN","BELGRANO","SARMIENTO","RIVADAVIA","ROSAS","MITRE","IRIGOYEN","PERÓN","EVITA","BORGES","CORTÁZAR","SÁBATO","ARLT","HERNÁNDEZ","STORNI","PIZARNIK","WALSH","SORIANO","GARDEL","GOYENECHE","SOSA","CAFRUNE","YUPANQUI","SPINETTA","CERATI","CHARLY","FITO","PIAZZOLLA","TROILO","FAVALORO","LELOIR","HOUSSAY","FANGIO","REUTEMANN","DI STÉFANO","FILLOL","KEMPES","CANIGGIA","BATISTUTA","ORTEGA","RIQUELME","AGÜERO","DI MARÍA","TEVEZ","BOCA","RIVER","INDEPENDIENTE","RACING","SAN LORENZO","HURACÁN","VÉLEZ","ESTUDIANTES","GIMNASIA","NEWELLS","TALLERES","COLÓN","SUPERCLÁSICO","GAMBETA","CHILENA","PENAL","OFFSIDE","ENGANCHE","VOLANTE","ARQUERO","DELANTERO","CAMPEONATO","TORNEO","COPA","DESCENSO","ASCENSO","HINCHA","BARRA","TRIBUNA","CANCHA","CLÁSICO","DERBY","POLO","PATO","HOCKEY","RUGBY","VÓLEY","BÁSQUET","HANDBALL","ATLETISMO","NATACIÓN","REVOLUCIÓN","DICTADURA","DEMOCRACIA","INDEPENDENCIA","COLONIA","RENACIMIENTO","ILUSTRACIÓN","ROMANTICISMO","BARROCO","NAPOLEÓN","CLEOPATRA","ALEJANDRO MAGNO","JULIO CÉSAR","ATILA","GENGIS KHAN","LINCOLN","KENNEDY","CHURCHILL","GANDHI","MANDELA","LUTHER KING","HITLER","STALIN","MAO","FRANCO","MUSSOLINI","PINOCHET","CASTRO","PIRÁMIDE","COLISEO","MACHU PICCHU","STONEHENGE","ANGKOR","PETRA","PARTENÓN","TAJ MAHAL","VERSALLES","ALHAMBRA","MURALLA CHINA","POMPEYA","ALEJANDRÍA","SEGUNDA GUERRA","VIETNAM","HOLOCAUSTO","INQUISICIÓN","CRUZADAS","CONQUISTA","AMAZONAS","NILO","GANGES","YANGTSÉ","VOLGA","MISSISSIPPI","CONGO","EVEREST","HIMALAYA","ALPES","KILIMANJARO","FUJI","MONT BLANC","ATLÁNTICO","PACÍFICO","ÍNDICO","MEDITERRÁNEO","CARIBE","BÁLTICO","CASPIO","TITICACA","CHINA","INDIA","BRASIL","RUSIA","CANADÁ","AUSTRALIA","ESTADOS UNIDOS","JAPÓN","COREA","TAILANDIA","INDONESIA","FILIPINAS","MALASIA","MYANMAR","NIGERIA","EGIPTO","ETIOPÍA","SUDÁFRICA","KENIA","MARRUECOS","GHANA","ANGOLA","ESPAÑA","ITALIA","FRANCIA","ALEMANIA","REINO UNIDO","PORTUGAL","HOLANDA","BÉLGICA","SUIZA","SUECIA","NORUEGA","DINAMARCA","AUSTRIA","GRECIA","TURQUÍA","POLONIA","HUNGRÍA","RUMANIA","UCRANIA","SERBIA","CROACIA","BULGARIA","ESCOCIA","IRLANDA","MÉXICO","COLOMBIA","VENEZUELA","PERÚ","CHILE","URUGUAY","BOLIVIA","ECUADOR","PARAGUAY","PANAMÁ","CUBA","HAITÍ","JAMAICA","COSTA RICA","HONDURAS","GUATEMALA","IRÁN","IRAK","SIRIA","ARABIA","ISRAEL","PAKISTÁN","BANGLADÉS","EINSTEIN","NEWTON","DARWIN","CURIE","HAWKING","TESLA","EDISON","GALILEO","COPÉRNICO","ÁTOMO","MOLÉCULA","CÉLULA","ADN","GEN","CROMOSOMA","PROTEÍNA","ENZIMA","NEURONA","GRAVEDAD","RELATIVIDAD","QUANTUM","AGUJERO NEGRO","SUPERNOVA","NEBULOSA","PLANETA","ESTRELLA","GALAXIA","UNIVERSO","COMETA","ASTEROIDE","LUNA","SOL","MARTE","VENUS","JÚPITER","SATURNO","NEPTUNO","PLUTÓN","URANO","ROBOT","ALGORITMO","INTERNET","CELULAR","LÁSER","RADAR","GPS","CHIP","VACUNA","ANTIBIÓTICO","CIRUGÍA","TRASPLANTE","ECOSISTEMA","EVOLUCIÓN","FOTOSÍNTESIS","CRISPR","GENOMA","SINAPSIS","MITOCONDRIA","NANOTECNOLOGÍA","SATÉLITE","INTELIGENCIA","COMPUTADORA","SOFTWARE","HARDWARE","DRONE","SHAKESPEARE","BEETHOVEN","MOZART","BACH","CHOPIN","VIVALDI","DEBUSSY","WAGNER","VERDI","PICASSO","WARHOL","DALÍ","VAN GOGH","MONET","REMBRANDT","KLIMT","FRIDA KAHLO","BANKSY","CERVANTES","KAFKA","DOSTOIEVSKI","TOLSTÓI","DICKENS","WILDE","DANTE","GOETHE","HUGO","HOMERO","SÓCRATES","PLATÓN","ARISTÓTELES","DESCARTES","KANT","NIETZSCHE","HEGEL","BALLET","ÓPERA","TEATRO","FOTOGRAFÍA","ESCULTURA","GRABADO","ROCK","POP","JAZZ","REGGAETON","HIP HOP","ELECTRÓNICA","BLUES","METAL","SOUL","FUNK","OSCAR","CANNES","GRAMMY","BAFTA","VENECIA","BERLÍN","SUNDANCE","GUERNICA","MONA LISA","LA PIEDAD","DAVID","EL PENSADOR","LAS MENINAS","EL GRITO","KUBRICK","HITCHCOCK","TARANTINO","SPIELBERG","CHAPLIN","FELLINI","FÚTBOL","TENIS","GOLF","CICLISMO","ESQUÍ","SNOWBOARD","BOXEO","JUDO","KARATE","ESGRIMA","REMO","OLIMPIADAS","MUNDIAL","CHAMPIONS","WIMBLEDON","ROLAND GARROS","MARATÓN","TRIATLÓN","FÓRMULA UNO","MOTO GP","RALLY","SURF","FEDERER","NADAL","DJOKOVIC","SERENA","RONALDO","NEYMAR","MBAPPÉ","HAALAND","LEBRON","JORDAN","BOLT","PHELPS","SCHUMACHER","SENNA","HAMILTON","ALONSO","TIGRE","LEÓN","ELEFANTE","JIRAFA","RINOCERONTE","HIPOPÓTAMO","GORILA","CHIMPANCÉ","OSO POLAR","LOBO","ZORRO","VENADO","BISONTE","CAMELLO","DROMEDARIO","ALPACA","LLAMA","CÓNDOR","PINGÜINO","FLAMENCO","TUCÁN","LORO","COLIBRÍ","ÁGUILA","HALCÓN","TIBURÓN","BALLENA","DELFÍN","PULPO","CALAMAR","MEDUSA","CORAL","BARRACUDA","SERPIENTE","COCODRILO","TORTUGA","LAGARTO","CAMALEÓN","ANACONDA","CAIMÁN","HORMIGA","ABEJA","MARIPOSA","ESCARABAJO","ARAÑA","ESCORPIÓN","MANTIS","LIBÉLULA","SELVA","DESIERTO","TUNDRA","SABANA","TAIGA","PRADERA","MANGLAR","ARRECIFE","PANTANO","VOLCÁN","TERREMOTO","TSUNAMI","HURACÁN","TORNADO","AVALANCHA","SEQUÍA","INUNDACIÓN","AMOR","ODIO","ALEGRÍA","TRISTEZA","MIEDO","SORPRESA","VERGÜENZA","IRA","ASCO","CULPA","ESPERANZA","DUDA","CONFIANZA","TRAICIÓN","LEALTAD","HONOR","LIBERTAD","DIGNIDAD","JUSTICIA","IGUALDAD","SOLIDARIDAD","EMPATÍA","VERDAD","MENTIRA","PARADOJA","IRONÍA","SECRETO","MISTERIO","CAOS","EQUILIBRIO","ARMONÍA","RITMO","MELODÍA","SILENCIO","TIEMPO","ESPACIO","INFINITO","ETERNIDAD","MEMORIA","SUEÑO","PESADILLA","ILUSIÓN","ECLIPSE","AURORA","CREPÚSCULO","SOLSTICIO","AGUA","FUEGO","TIERRA","AIRE","HIELO","VAPOR","TRUENO","RELÁMPAGO","NUBE","NIEBLA","CIUDAD","PUEBLO","BARRIO","CALLE","PLAZA","PUENTE","TÚNEL","RUTA","SENDERO","FARO","LIBRO","POEMA","NOVELA","CUENTO","SINFONÍA","CONCIERTO","ÁLBUM","PELÍCULA","SERIE","PALABRA","IDIOMA","GRITO","SUSURRO","ECO","SOMBRA","LUZ","REFLEJO","ESPEJO","LABERINTO"])];
+var WORDS=["ABOGADO","ACEITE","ÁFRICA","AGENTE","AGUA","ÁGUILA","AGUJA","AGUJERO","AIRE","ALEMANIA","ALGODÓN","ALIANZA","ALPES","AMBULANCIA","AMÉRICA","ÁNGEL","ANILLO","ANTÁRTIDA","ANTORCHA","ARAÑA","ARCHIVO","ARCO","ARGENTINA","ARTÍCULO","AS","ATLÁNTIDA","AZTECA","BAILE","BALA","BALLENA","BANCO","BANDA","BAÑO","BARCO","BARRA","BATERÍA","BERLÍN","BERMUDAS","BICHO","BLANCO","BLOQUE","BOCA","BOLA","BOLSA","BOMBA","BOSQUE","BOTA","BOTELLA","BOTÓN","BRAZO","BRUJA","CABALLERO","CABALLO","CABEZA","CABINA","CABO","CACTUS","CADENA","CAJA","CAMA","CÁMARA","CAMBIO","CAMPANA","CAMPO","CANAL","CANGURO","CANTO","CAÑA","CAPA","CAPITAL","CAQUI","CARA","CARAVANA","CARGA","CARRERA","CARRO","CARTA","CASCO","CASINO","CAZA","CEMENTERIO","CENTAURO","CENTRO","CHECO","CHOCOLATE","CHOQUE","CHULETA","CIENTÍFICO","CINTA","CINTURÓN","CÍRCULO","CLASE","COCHE","COCINERO","COCO","CÓDIGO","COLA","CÓLERA","COLUMNA","COMETA","COMPÁS","CONCIERTO","CONEJO","CONTRABANDISTA","COPA","CORAZÓN","CORNETA","CORONA","CORREDOR","CORRIENTE","CORTE","CRESTA","CROMO","CRUZ","CUADRO","CUARTO","CUBIERTA","CUBO","CUCHILLO","CUELLO","CUERDA","CUERNO","CURA","DAMA","DELTA","DESTINO","DÍA","DIAMANTE","DIANA","DIARIO","DIENTE","DINOSAURIO","DISCO","DON","DRAGÓN","DUENDE","EGIPTO","EMBAJADA","EMPERADOR","ENANO","ENFERMEDAD","ENFERMERA","ENLACE","ESCORPIÓN","ESPACIO","ESPÍA","ESTACIÓN","ESTADIO","ESTADO","ESTRELLA","ESTUDIO","ETIQUETA","EUROPA","EXTRATERRESTRE","FALDA","FANTASMA","FARO","FICHA","FIESTA","FIGURA","FLAUTA","FLECHA","FOSO","FRANCIA","FRENTE","FUEGO","FUENTE","FUERZA","FURGONETA","GANCHO","GATO","GENIO","GIGANTE","GOLFO","GOLONDRINA","GOLPE","GOMA","GÓNDOLA","GOTA","GRADO","GRANADA","GRANO","GRECIA","GRIFO","GUANTE","GUARDIA","GUERRA","GUSANO","HELADO","HELICÓPTERO","HIELO","HIERBA","HOJA","HORCA","HOSPITAL","HOTEL","IGLESIA","IMÁN","INDIA","ÍNDICE","INGLATERRA","ITALIA","JARRA","JUDÍA","JUICIO","KIWI","LADRÓN","LÁSER","LÁTIGO","LENGUA","LEÓN","LIBRA","LIMA","LIMUSINA","LÍNEA","LISTA","LLAMA","LLAVE","LOMO","LONDRES","LUNA","LUZ","MAESTRO","MAGIA","MALTA","MANCHA","MANDO","MANGA","MANGO","MANO","MANZANA","MAÑANA","MARCA","MARCHA","MARFIL","MASA","MÁSCARA","MAZO","MÉDICO","MERCURIO","MESA","METRO","MÉXICO","MICRO","MICROSCOPIO","MIEL","MILLONARIO","MINA","MISIL","MODELO","MÓDULO","MONITOR","MONO","MORTERO","MOSCÚ","MOTOR","MUELLE","MUERTE","MUÑECA","MURO","NARANJA","NAVE","NIEVE","NILO","NINJA","NOCHE","NOTA","NUDO","OBRA","OJO","OLA","OLIMPO","ÓPERA","ORDEN","ÓRGANO","ORO","OSO","PALA","PALMA","PANTALLA","PAPEL","PARACAÍDAS","PASE","PASO","PASTA","PASTEL","PAVO","PEKÍN","PELÍCULA","PELOTÓN","PENDIENTE","PERRO","PEZ","PICO","PIE","PIEZA","PILA","PILOTO","PINCHO","PINGÜINO","PINTA","PIÑA","PIRÁMIDE","PIRATA","PISTA","PISTOLA","PLACA","PLANO","PLANTA","PLÁTANO","PLAYA","PLOMO","PLUMA","POLICÍA","POLO","PORTADA","PORTERO","POTRO","PRENSA","PRIMA","PRINCESA","PUENTE","PUERTO","PULPO","PULSO","PUNTA","PUNTO","RADIO","RASCACIELOS","RATÓN","RAYO","RED","REGLA","REINA","RESERVA","REVOLUCIÓN","REY","ROBOT","ROJO","ROMA","RONDA","ROSA","RULETA","SABLE","SÁHARA","SALSA","SATÉLITE","SATURNO","SEÑAL","SERIE","SERPIENTE","SIERRA","SILLA","SIRENA","SOBRE","SOLDADO","SUBMARINISTA","SUERTE","SUPERHÉROE","TABLA","TABLETA","TACO","TACTO","TALÓN","TANQUE","TAPA","TARDE","TEATRO","TECLADO","TELESCOPIO","TESTIGO","TIEMPO","TIENDA","TIERRA","TOKIO","TOPO","TORRE","TRAMA","TRONCO","TUBERÍA","TUBO","UNICORNIO","VACÍO","VADO","VAMPIRO","VELA","VENENO","VENUS","VESTIDO","VIDA","VIDRIO","VIENTO","YEMA","ZANAHORIA","ZAPATO"];
 
 var authenticated=false;
 var myId="",myName="",myTeam="red",myRole="agent",isHost=false;
@@ -53,10 +65,21 @@ var view="home",numT=2,joinCode="",joinErr="",errMsg="",passErr="";
 var peer=null,hostConn=null,guestConns=[];
 var gs=null;
 var clueW="",clueN="1";
+/* -- Sound system -- */
+var SND=null;
+function initSound(){try{SND=new(window.AudioContext||window.webkitAudioContext)();if(SND.state==="suspended")SND.resume();}catch(e){}}
+function playTone(f,d,t,v){if(!SND)return;try{var o=SND.createOscillator(),g=SND.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.setValueAtTime(v||.3,SND.currentTime);g.gain.exponentialRampToValueAtTime(.001,SND.currentTime+d);o.connect(g);g.connect(SND.destination);o.start();o.stop(SND.currentTime+d);}catch(e){}}
+function playCorrect(){playTone(523,.12,"sine");setTimeout(function(){playTone(659,.12,"sine")},100);setTimeout(function(){playTone(784,.18,"sine")},200);}
+function playWrong(){playTone(392,.2,"sawtooth",.15);setTimeout(function(){playTone(330,.3,"sawtooth",.12)},150);}
+function playAssassin(){playTone(200,.35,"sawtooth",.25);setTimeout(function(){playTone(150,.5,"sawtooth",.2)},200);setTimeout(function(){playTone(100,.7,"sawtooth",.15)},400);}
+function playWin(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){playTone(f,.2,"sine",.25)},i*120);});}
+function playLose(){[400,350,300,200].forEach(function(f,i){setTimeout(function(){playTone(f,.25,"sawtooth",.15)},i*150);});}
+function playTurn(){playTone(880,.08,"sine",.15);setTimeout(function(){playTone(1108,.08,"sine",.15)},80);}
+
 
 var shuf=function(a){var r=[...a];for(var i=r.length-1;i>0;i--){var j=0|Math.random()*(i+1);var t=r[i];r[i]=r[j];r[j]=t;}return r;};
 var genCode=function(){return Array.from({length:6},function(){return "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[0|Math.random()*32];}).join("");};
-var aIds=function(){return ["red","blue","yellow","green"].slice(0,gs?gs.numT:numT);};
+var aIds=function(){return ["red","blue"];};
 var me=function(){return gs&&gs.players.find(function(p){return p.id===myId;});};
 var curT=function(){return gs&&gs.teams[gs.cur];};
 
@@ -64,7 +87,7 @@ function buildBoard(n){
   var w=shuf(WORDS).slice(0,25);
   var cts=n===2?[9,8]:n===3?[7,7,7]:[5,5,5,5];
   var neu=n===2?7:n===3?3:4;
-  var ids=["red","blue","yellow","green"].slice(0,n);
+  var ids=n===2?["red","blue"]:n===3?["red","blue","yellow"]:["red","blue","yellow","green"];
   var seq=[];cts.forEach(function(c,i){for(var k=0;k<c;k++)seq.push(ids[i]);});
   for(var k=0;k<neu;k++)seq.push("neutral");seq.push("assassin");
   var sc=shuf(seq);
@@ -129,24 +152,34 @@ function doStart(){
 
 function doTap(idx){
   if(!gs||gs.board[idx].done||gs.gl<=0)return;
-  var card=gs.board[idx];
-  var nb=gs.board.map(function(c,i){return i===idx?Object.assign({},c,{done:true}):c;});
   var ct=gs.teams[gs.cur];
+  gs.board[idx].guessedBy=ct.id;
+  var card=gs.board[idx];
+  var nb=gs.board.map(function(c,i){return i===idx?Object.assign({},c,{done:true,flashTs:Date.now()}):c;});
   if(card.color==="assassin"){
-    gs=Object.assign({},gs,{board:nb,phase:"result",result:{win:false,teamId:ct.id}});
-    broadcast();render();return;
+    playAssassin();
+    gs=Object.assign({},gs,{board:nb,gl:0});
+    render();
+    setTimeout(function(){gs=Object.assign({},gs,{phase:"result",result:{win:false,teamId:ct.id}});broadcast();render();},650);
+    return;
   }
   var nt=gs.teams;
   if(card.color!=="neutral"){
     nt=gs.teams.map(function(t){return t.id===card.color?Object.assign({},t,{found:t.found+1}):t;});
     var sc=nt.find(function(t){return t.id===card.color;});
-    if(sc.found>=sc.total){gs=Object.assign({},gs,{board:nb,teams:nt,phase:"result",result:{win:true,teamId:sc.id}});broadcast();render();return;}
+    if(sc.found>=sc.total){
+      gs=Object.assign({},gs,{board:nb,teams:nt,gl:0});
+      render();
+      setTimeout(function(){playWin();gs=Object.assign({},gs,{phase:"result",result:{win:true,teamId:sc.id}});broadcast();render();},650);
+      return;
+    }
   }
   if(card.color===ct.id){
-    var ng=gs.gl-1;
-    if(ng<=0){var nx2=(gs.cur+1)%gs.teams.length;gs=Object.assign({},gs,{board:nb,teams:nt,phase:"spy",cur:nx2,clue:null,gl:0});}
-    else gs=Object.assign({},gs,{board:nb,teams:nt,gl:ng});
+    playCorrect();
+    if(gs.gl-1<=0){var nx2=(gs.cur+1)%gs.teams.length;gs=Object.assign({},gs,{board:nb,teams:nt,phase:"spy",cur:nx2,clue:null,gl:0});}
+    else gs=Object.assign({},gs,{board:nb,teams:nt,gl:gs.gl-1});
   }else{
+    playWrong();
     var nx3=(gs.cur+1)%gs.teams.length;
     gs=Object.assign({},gs,{board:nb,teams:nt,phase:"spy",cur:nx3,clue:null,gl:0});
   }
@@ -167,6 +200,7 @@ function setupHost(code){
   if(peer)try{peer.destroy();}catch(e){}
   peer=new Peer(code,{debug:0});
   peer.on("open",function(id){
+    if(!SND)initSound();
     myId=id;isHost=true;
     gs={code:id,phase:"lobby",numT:numT,board:[],teams:[],players:[],cur:0,clue:null,gl:0,result:null};
     processAction(myId,{t:"join",name:myName,teamId:myTeam,role:myRole});
@@ -221,7 +255,7 @@ function oBtn(l,id,mt){return '<button id="'+id+'" class="btn dim" style="width:
 function lbl(t){return '<div style="font-family:'+FD+';font-size:11px;letter-spacing:2px;color:'+DM+';margin-bottom:9px;">'+t+'</div>';}
 var inpS='background:#181410;border:1px solid #2A2418;color:'+CR+';font-family:'+FD+';font-size:22px;letter-spacing:2px;padding:11px 12px;border-radius:4px;outline:none;width:100%;';
 function bk(id){return '<button id="'+id+'" class="btn dim" style="background:none;border:none;color:'+DM+';font-family:'+FD+';font-size:15px;letter-spacing:2px;cursor:pointer;padding:0;margin-bottom:28px;align-self:flex-start;">← VOLVER</button>';}
-function teamBtns(sel,n){return ["red","blue","yellow","green"].slice(0,n||4).map(function(id){return '<button data-team="'+id+'" class="btn tb" style="flex:1;padding:9px 4px;font-family:'+FD+';font-size:12px;letter-spacing:1px;background:'+(sel===id?P[id].bg:BG)+';color:'+(sel===id?P[id].tx:DM)+';border:1px solid '+(sel===id?P[id].hi:"#2A2418")+';border-radius:3px;cursor:pointer;">'+P[id].nm+'</button>';}).join("");}
+function teamBtns(sel){return["red","blue"].map(function(id){return '<button data-team="'+id+'" class="btn tb" style="flex:1;padding:9px 4px;font-family:'+FD+';font-size:12px;letter-spacing:1px;background:'+(sel===id?P[id].bg:BG)+';color:'+(sel===id?P[id].tx:DM)+';border:1px solid '+(sel===id?P[id].hi:"#2A2418")+';border-radius:3px;cursor:pointer;">'+P[id].nm+'</button>';}).join("");}
 function roleBtns(sel){return [{id:"spy",nm:"🔍 ESPÍA"},{id:"agent",nm:"🕵️ AGENTE"}].map(function(r){return '<button data-role="'+r.id+'" class="btn rb" style="flex:1;padding:11px 6px;font-family:'+FD+';font-size:13px;letter-spacing:1px;background:'+(sel===r.id?CR:BG)+';color:'+(sel===r.id?BG:DM)+';border:1px solid '+(sel===r.id?CR:"#2A2418")+';border-radius:3px;cursor:pointer;">'+r.nm+'</button>';}).join("");}
 function bindTB(cb){document.querySelectorAll(".tb").forEach(function(b){b.onclick=function(){cb(b.dataset.team);};});}
 function bindRB(cb){document.querySelectorAll(".rb").forEach(function(b){b.onclick=function(){cb(b.dataset.role);};});}
@@ -240,41 +274,50 @@ function bindGameBar(){
 
 /* Tablero solo palabras: font 20px — el doble */
 function wordBoard(board,clickable){
+  var now=Date.now();
   return board.map(function(card,i){
     var isDone=card.done;
+    var isFlash=card.flashTs&&(now-card.flashTs<700);
     var c=P[card.color];
-    var style='background:'+(isDone?c.bg+"22":"#1C1916")+';border:1px solid '+(isDone?c.hi+"30":"#282418")+';border-radius:4px;min-height:76px;display:flex;align-items:center;justify-content:center;padding:5px 3px;';
-    var inner='<div style="font-family:'+FD+';font-size:20px;line-height:1.1;text-align:center;word-break:break-word;color:'+(isDone?c.hi+"70":CR)+';text-decoration:'+(isDone?"line-through":"none")+';">'+card.w+'</div>';
-    if(clickable&&!isDone)return '<div data-i="'+i+'" class="card" style="'+style+'">'+inner+'</div>';
-    return '<div class="card-ro '+(isDone?"done":"")+'" style="'+style+'opacity:'+(isDone?.42:1)+';">'+inner+'</div>';
+    var bg=isDone?(card.guessedBy===card.color?"#1A5A1A":"#5A1A1A"):"#1C1916";
+    var style='background:'+bg+';border:1px solid '+(isDone?c.hi+"AA":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;';
+    var inner='<div style="font-family:'+FD+';font-size:24px;line-height:1.2;text-align:center;word-break:break-word;color:'+(isDone?c.hi+"CC":CR)+';">'+(card.guessedBy&&isDone?'<span style="font-size:9px;color:'+P[card.guessedBy].hi+'88;display:block;letter-spacing:1px;margin-bottom:2px;">✓ '+P[card.guessedBy].nm+'</span>':'')+card.w+'</div>';
+    if(isFlash){
+      var flashCls=card.color==="assassin"?"card-flash-assassin":(card.guessedBy===card.color?"card-flash-correct":"card-flash-wrong");
+      var fs='background:'+bg+';border:1px solid '+(isDone?c.hi+"AA":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;--final-bg:'+bg+';';
+      var cls="word-card "+flashCls;
+      if(clickable&&!isDone)return '<div data-i="'+i+'" class="'+cls+' card" style="'+fs+'">'+inner+'</div>';
+      return '<div class="word-card '+flashCls+' card-ro" style="'+fs+'opacity:1;">'+inner+'</div>';
+    }
+    if(clickable&&!isDone)return '<div data-i="'+i+'" class="card word-card" style="'+style+'">'+inner+'</div>';
+    return '<div class="word-card card-ro '+(isDone?"done":"")+'" style="'+style+'opacity:1;">'+inner+'</div>';
   }).join("");
 }
-
 /* ── VIEWS ──────────────────────────────────────────────────────────────── */
 
 function renderPass(){
   mount(
     '<div style="font-family:'+FD+';font-size:80px;line-height:.83;letter-spacing:5px;text-align:center;margin-bottom:8px;">EL<br>CÓDIGO</div>'+
-    '<div style="font-family:'+FD+';font-size:80px;letter-spacing:5px;color:'+P.yellow.hi+';text-align:center;margin-bottom:6px;">SECRETO</div>'+
+    '<div style="font-family:'+FD+';font-size:80px;letter-spacing:5px;color:'+"#D8A800"+';text-align:center;margin-bottom:6px;">SECRETO</div>'+
     '<div style="font-family:'+FS+';font-size:11px;color:'+DM+';text-align:center;font-style:italic;margin-bottom:36px;">si la china no está, jugá acá</div>'+
     lbl("CONTRASEÑA")+
     '<input id="pw" type="password" placeholder="••••••••" style="'+inpS+'margin-bottom:6px;letter-spacing:3px;text-align:center;" autocomplete="off">'+
     (passErr?'<div style="font-size:12px;color:#CC4444;margin-bottom:12px;font-family:'+FD+';letter-spacing:1px;">'+passErr+'</div>':'<div style="margin-bottom:12px;"></div>')+
     pBtn("ENTRAR →","pw-ok",CR,BG,0),true
   );
-  var go=function(){var v=document.getElementById("pw").value;if(v===GAME_PASS){authenticated=true;render();}else{passErr="Contraseña incorrecta.";renderPass();}};
+  var go=function(){if(!SND)initSound();var v=document.getElementById("pw").value;if(v===GAME_PASS){authenticated=true;render();}else{passErr="Contraseña incorrecta.";renderPass();}};
   $("#pw-ok").onclick=go;
   document.getElementById("pw").addEventListener("keydown",function(e){if(e.key==="Enter")go();});
 }
 
 function renderHome(){
   mount(
-    '<div style="display:flex;gap:10px;margin-bottom:48px;">'+["red","blue","yellow","green"].map(function(id){return '<div style="width:10px;height:10px;background:'+P[id].hi+';border-radius:50%;"></div>';}).join("")+'</div>'+
+    '<div style="display:flex;gap:10px;margin-bottom:48px;">'+["red","blue"].map(function(id){return '<div style="width:10px;height:10px;background:'+P[id].hi+';border-radius:50%;"></div>';}).join("")+'</div>'+
     '<div style="font-family:'+FD+';font-size:82px;line-height:.83;letter-spacing:5px;text-align:center;">EL<br>CÓDIGO</div>'+
-    '<div style="font-family:'+FD+';font-size:82px;letter-spacing:5px;color:'+P.yellow.hi+';line-height:1;text-align:center;">SECRETO</div>'+
+    '<div style="font-family:'+FD+';font-size:82px;letter-spacing:5px;color:'+"#D8A800"+';line-height:1;text-align:center;">SECRETO</div>'+
     '<div style="font-family:'+FS+';font-size:11px;color:'+DM+';text-align:center;font-style:italic;margin-top:10px;">si la china no está, jugá acá</div>'+
     '<div style="width:50px;height:1px;background:#252018;margin:18px auto;"></div>'+
-    '<div style="font-family:'+FD+';font-size:10px;letter-spacing:3px;color:'+DM+';text-align:center;margin-bottom:48px;">MULTIJUGADOR · 500 PALABRAS · ARGENTINA</div>'+
+    '<div style="font-family:'+FD+';font-size:10px;letter-spacing:3px;color:'+DM+';text-align:center;margin-bottom:48px;">CÓDIGO SECRETO · MULTIJUGADOR</div>'+
     pBtn("CREAR PARTIDA","c-crear",CR,BG,0)+oBtn("UNIRSE A PARTIDA","c-unir",10)+oBtn("REGLAS","c-reglas",8),true
   );
   $("#c-crear").onclick=function(){view="create";render();};
@@ -288,15 +331,14 @@ function renderCreate(){
     '<div style="font-family:'+FD+';font-size:52px;line-height:.88;letter-spacing:2px;margin-bottom:22px;">CREAR<br>PARTIDA</div>'+
     lbl("TU NOMBRE")+'<input id="c-name" type="text" placeholder="NOMBRE" autocomplete="off" style="'+inpS+'margin-bottom:18px;" value="'+myName+'">'+
     lbl("TU EQUIPO")+'<div style="display:flex;gap:8px;margin-bottom:18px;">'+teamBtns(myTeam)+'</div>'+
-    lbl("TU ROL")+'<div style="display:flex;gap:8px;margin-bottom:22px;">'+roleBtns(myRole)+'</div>'+
-    lbl("CANTIDAD DE EQUIPOS")+'<div style="display:flex;gap:8px;margin-bottom:28px;">'+ [2,3,4].map(function(n){return '<button data-n="'+n+'" class="btn nb" style="flex:1;padding:14px 0;font-family:'+FD+';font-size:40px;background:'+(numT===n?CR:"#181410")+';color:'+(numT===n?BG:DM)+';border:1px solid '+(numT===n?CR:"#242018")+';border-radius:4px;cursor:pointer;">'+n+'</button>';}).join("")+'</div>'+
+    lbl("TU ROL")+'<div style="display:flex;gap:8px;margin-bottom:22px;">'+roleBtns(myRole)+'</div>'/div>'+
     pBtn("CREAR SALA →","c-ok",CR,BG,0)
   );
   $("#c-bk").onclick=function(){view="home";render();};
   bindTB(function(t){myTeam=t;render();});
   bindRB(function(r){myRole=r;render();});
   document.querySelectorAll(".nb").forEach(function(b){b.onclick=function(){numT=+b.dataset.n;render();};});
-  $("#c-ok").onclick=function(){var n=$("#c-name").value.trim();if(!n)return;myName=n;setupHost(genCode());};
+  $("#c-ok").onclick=function(){var n=$("#c-name").value.trim();if(!n)return;if(!SND)initSound();myName=n;setupHost(genCode());};
 }
 
 function renderJoin(){
@@ -329,6 +371,7 @@ function renderJoin(){
   });
 
   $("#j-ok").onclick=function(){
+    if(!SND)initSound();
     var code=$("#j-code").value.trim().toUpperCase();var name=$("#j-name").value.trim();
     joinCode=code;myName=name;
     if(!code||!name){joinErr="Completá todos los campos.";render();return;}
@@ -358,7 +401,7 @@ function renderLobby(){
     '<div style="background:#181410;border-radius:6px;padding:16px;text-align:center;margin-bottom:18px;border:1px solid #2A2418;"><div style="font-family:'+FD+';font-size:10px;letter-spacing:3px;color:'+DM+';margin-bottom:6px;">CÓDIGO DE SALA</div><div style="font-family:'+FD+';font-size:56px;letter-spacing:8px;color:'+CR+';">'+gs.code+'</div><div style="font-size:12px;color:'+DM+';margin-top:6px;">Compartí este código con tus amigos</div></div>'+
     (isHost?'<div style="margin-bottom:16px;">'+lbl("EQUIPOS")+'<div style="display:flex;gap:8px;">'+ [2,3,4].map(function(n){return '<button data-n="'+n+'" class="btn nb" style="flex:1;padding:10px 0;font-family:'+FD+';font-size:34px;background:'+(gs.numT===n?CR:"#181410")+';color:'+(gs.numT===n?BG:DM)+';border:1px solid '+(gs.numT===n?CR:"#242018")+';border-radius:4px;cursor:pointer;">'+n+'</button>';}).join("")+'</div></div>':'')+
     rows+
-    '<div style="background:#181410;border-radius:4px;padding:12px;margin-top:10px;border:1px solid '+P[curTid].bg+'88;"><div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;color:'+DM+';margin-bottom:10px;">MI CONFIGURACIÓN</div><div style="display:flex;gap:6px;margin-bottom:8px;">'+teamBtns(curTid,gs.numT)+'</div><div style="display:flex;gap:6px;">'+roleBtns(curR)+'</div></div>'+
+    '<div style="background:#181410;border-radius:4px;padding:12px;margin-top:10px;border:1px solid '+P[curTid].bg+'88;"><div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;color:'+DM+';margin-bottom:10px;">MI CONFIGURACIÓN</div><div style="display:flex;gap:6px;margin-bottom:8px;">'+teamBtns(curTid)+'</div><div style="display:flex;gap:6px;">'+roleBtns(curR)+'</div></div>'+
     (isHost?(canStart?pBtn("COMENZAR →","l-start",CR,BG,12):'<div style="font-family:'+FD+';font-size:10px;letter-spacing:1px;color:#3A3020;text-align:center;margin-top:14px;">CADA EQUIPO NECESITA AL MENOS UN ESPÍA · MÍNIMO 2 JUGADORES</div>'):
     '<div style="font-family:'+FD+';font-size:13px;letter-spacing:2px;color:'+DM+';text-align:center;margin-top:20px;">ESPERANDO QUE EL HOST INICIE...</div>')
   );
@@ -386,7 +429,7 @@ function renderGame(){
 
   /* 1 — ESPÍA ACTIVO: tablero colores + input pista */
   if(gs.phase==="spy"&&isCurSpy){
-    var bd=gs.board.map(function(card){var c=P[card.color];return '<div style="background:'+(card.done?"#120F0A":c.bg)+';border:1px solid '+(card.done?"#1A1612":(c.bd||c.hi))+';border-radius:3px;min-height:52px;display:flex;align-items:center;justify-content:center;padding:3px 2px;opacity:'+(card.done?.22:1)+'"><div style="font-family:'+FD+';font-size:8.5px;line-height:1.2;text-align:center;word-break:break-word;padding:0 2px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
+    var bd=gs.board.map(function(card){var c=P[card.color];return '<div class="spy-card" style="background:'+(card.done?c.bg+"88":c.bg)+';border:1px solid '+(card.done?c.hi+"66":(c.bd||c.hi))+';border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 4px;opacity:1"><div style="font-family:'+FD+';font-size:18px;line-height:1.2;text-align:center;word-break:break-word;padding:4px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
     var st='<div style="display:flex;gap:6px;margin-bottom:12px;">'+gs.teams.map(function(t){var c=P[t.id];var mc=t.id===ct.id;return '<div style="flex:1;padding:7px 3px;text-align:center;border-radius:3px;background:'+(mc?c.bg:"#181410")+';border:'+(mc?"none":"1px solid #201C14")+'"><div style="font-family:'+FD+';font-size:28px;color:'+(mc?c.tx:DM)+'">'+(t.total-t.found)+'</div><div style="font-family:'+FD+';font-size:7px;letter-spacing:1px;color:'+(mc?c.tx+"BB":"#3C3020")+'">'+c.nm+'</div></div>';}).join("")+'</div>';
     mount(
       gameActionBar()+
@@ -408,7 +451,7 @@ function renderGame(){
 
   /* 2 — ESPÍA ACTIVO viendo adivinar: tablero colores read-only */
   if(gs.phase==="guessing"&&isCurSpy){
-    var bd2=gs.board.map(function(card){var c=P[card.color];return '<div style="background:'+(card.done?"#120F0A":c.bg)+';border:1px solid '+(card.done?"#1A1612":(c.bd||c.hi))+';border-radius:3px;min-height:52px;display:flex;align-items:center;justify-content:center;padding:3px 2px;opacity:'+(card.done?.22:1)+'"><div style="font-family:'+FD+';font-size:8.5px;line-height:1.2;text-align:center;word-break:break-word;padding:0 2px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
+    var bd2=gs.board.map(function(card){var c=P[card.color];return '<div class="spy-card" style="background:'+(card.done?c.bg+"88":c.bg)+';border:1px solid '+(card.done?c.hi+"66":(c.bd||c.hi))+';border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 4px;opacity:'+(card.done?.22:1)+'"><div style="font-family:'+FD+';font-size:18px;line-height:1.2;text-align:center;word-break:break-word;padding:4px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
     mount(
       gameActionBar()+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;color:'+DM+';">ADIVINANDO</div><div style="font-family:'+FD+';font-size:30px;letter-spacing:2px;color:'+tc.hi+';">EQUIPO '+tc.nm+'</div></div><div style="text-align:right;"><div style="font-family:'+FD+';font-size:10px;color:'+DM+';">QUEDAN</div><div style="font-family:'+FD+';font-size:30px;">'+gs.gl+'</div></div></div>'+
