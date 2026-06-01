@@ -262,14 +262,21 @@ function bindRB(cb){document.querySelectorAll(".rb").forEach(function(b){b.oncli
 
 /* Barra de acciones durante la partida: SALIR (todos) + REINICIAR (host) */
 function gameActionBar(){
-  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'+
-    '<button id="ga-salir" class="btn dim" style="background:none;border:none;color:'+DM+';font-family:'+FD+';font-size:13px;letter-spacing:2px;cursor:pointer;padding:0;">← SALIR</button>'+
-    (isHost?'<button id="ga-reset" class="btn dim" style="background:none;border:1px solid #2A2418;color:'+DM+';font-family:'+FD+';font-size:13px;letter-spacing:2px;cursor:pointer;padding:5px 12px;border-radius:3px;">↺ REINICIAR</button>':'')+
-    '</div>';
-}
-function bindGameBar(){
-  var s=$("#ga-salir");if(s)s.onclick=doSalir;
-  var r=$("#ga-reset");if(r)r.onclick=function(){if(confirm("¿Reiniciar la partida con palabras nuevas?"))action({t:"rematch"});};
+  var m=me();
+  if(!gs||!m)return '';
+  var mc=P[m.teamId];
+  var ct=curT();
+  var isMyTurn=ct&&m.teamId===ct.id;
+  // Team badge: always visible, shows YOUR team
+  var teamBadge='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">'+
+    '<div style="width:8px;height:8px;background:'+mc.hi+';border-radius:2px;"></div>'+
+    '<div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;">'+
+      '<span style="color:'+mc.hi+';">EQUIPO '+mc.nm+'</span>'+
+      '<span style="color:'+DM+';margin-left:8px;">'+(m.role==="spy"?"🔍 ESPÍA":"🕵️ AGENTE")+'</span>'+
+    '</div>'+
+    (isMyTurn?'<div style="margin-left:auto;font-family:'+FD+';font-size:9px;color:'+P[ct.id].hi+';letter-spacing:1px;background:'+P[ct.id].bg+'88;padding:2px 8px;border-radius:2px;">TU TURNO</div>':'')+
+  '</div>';
+  return teamBadge;
 }
 
 /* Tablero solo palabras: font 20px — el doble */
@@ -279,35 +286,30 @@ function wordBoard(board,clickable){
     var isDone=card.done;
     var isFlash=card.flashTs&&(now-card.flashTs<700);
     var c=P[card.color];
+    // Background: guessedBy color if done (correct=green, wrong=red), plus original card color border
     var bg=isDone?(card.guessedBy===card.color?"#1A5A1A":"#5A1A1A"):"#1C1916";
-    var style='background:'+bg+';border:1px solid '+(isDone?c.hi+"AA":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;';
-    var inner='<div style="font-family:'+FD+';font-size:24px;line-height:1.2;text-align:center;word-break:break-word;color:'+(isDone?c.hi+"CC":CR)+';">'+(card.guessedBy&&isDone?'<span style="font-size:9px;color:'+P[card.guessedBy].hi+'88;display:block;letter-spacing:1px;margin-bottom:2px;">✓ '+P[card.guessedBy].nm+'</span>':'')+card.w+'</div>';
+    // Add an original-color indicator strip on the left side of guessed cards
+    var colorDot=isDone?'<div style="width:4px;position:absolute;left:0;top:2px;bottom:2px;background:'+c.hi+';border-radius:2px;"></div>':"";
+    var style='background:'+bg+';border:1px solid '+(isDone?c.hi+"88":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;position:relative;';
+    // Show: guessed-by badge, original color badge (small), and the word
+    var teamBadge='';
+    if(card.guessedBy&&isDone){
+      var gc=P[card.guessedBy];
+      teamBadge='<span style="font-size:8px;color:'+gc.hi+'CC;display:block;letter-spacing:1px;margin-bottom:1px;">'+(card.guessedBy===card.color?"✓":"✗")+' '+gc.nm+'</span>';
+    }
+    // Show original card color as a small colored label
+    var origColor=isDone?'<span style="font-size:7px;color:'+c.hi+'AA;display:block;letter-spacing:1px;margin-bottom:1px;">'+c.nm+'</span>':'';
+    var inner='<div style="font-family:'+FD+';font-size:24px;line-height:1.2;text-align:center;word-break:break-word;color:'+(isDone?c.hi+"CC":CR)+';">'+teamBadge+origColor+card.w+'</div>';
     if(isFlash){
       var flashCls=card.color==="assassin"?"card-flash-assassin":(card.guessedBy===card.color?"card-flash-correct":"card-flash-wrong");
-      var fs='background:'+bg+';border:1px solid '+(isDone?c.hi+"AA":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;--final-bg:'+bg+';';
+      var fs='background:'+bg+';border:1px solid '+(isDone?c.hi+"88":"#282418")+';border-radius:4px;min-height:100px;display:flex;align-items:center;justify-content:center;padding:8px 5px;--final-bg:'+bg+';position:relative;';
       var cls="word-card "+flashCls;
-      if(clickable&&!isDone)return '<div data-i="'+i+'" class="'+cls+' card" style="'+fs+'">'+inner+'</div>';
-      return '<div class="word-card '+flashCls+' card-ro" style="'+fs+'opacity:1;">'+inner+'</div>';
+      if(clickable&&!isDone)return '<div data-i="'+i+'" class="'+cls+' card" style="'+fs+'">'+colorDot+inner+'</div>';
+      return '<div class="word-card '+flashCls+' card-ro" style="'+fs+'opacity:1;">'+colorDot+inner+'</div>';
     }
     if(clickable&&!isDone)return '<div data-i="'+i+'" class="card word-card" style="'+style+'">'+inner+'</div>';
-    return '<div class="word-card card-ro '+(isDone?"done":"")+'" style="'+style+'opacity:1;">'+inner+'</div>';
+    return '<div class="word-card card-ro" style="'+style+'opacity:1;">'+colorDot+inner+'</div>';
   }).join("");
-}
-/* ── VIEWS ──────────────────────────────────────────────────────────────── */
-
-function renderPass(){
-  mount(
-    '<div style="font-family:'+FD+';font-size:80px;line-height:.83;letter-spacing:5px;text-align:center;margin-bottom:8px;">EL<br>CÓDIGO</div>'+
-    '<div style="font-family:'+FD+';font-size:80px;letter-spacing:5px;color:'+"#D8A800"+';text-align:center;margin-bottom:6px;">SECRETO</div>'+
-    '<div style="font-family:'+FS+';font-size:11px;color:'+DM+';text-align:center;font-style:italic;margin-bottom:36px;">si la china no está, jugá acá</div>'+
-    lbl("CONTRASEÑA")+
-    '<input id="pw" type="password" placeholder="••••••••" style="'+inpS+'margin-bottom:6px;letter-spacing:3px;text-align:center;" autocomplete="off">'+
-    (passErr?'<div style="font-size:12px;color:#CC4444;margin-bottom:12px;font-family:'+FD+';letter-spacing:1px;">'+passErr+'</div>':'<div style="margin-bottom:12px;"></div>')+
-    pBtn("ENTRAR →","pw-ok",CR,BG,0),true
-  );
-  var go=function(){if(!SND)initSound();var v=document.getElementById("pw").value;if(v===GAME_PASS){authenticated=true;render();}else{passErr="Contraseña incorrecta.";renderPass();}};
-  $("#pw-ok").onclick=go;
-  document.getElementById("pw").addEventListener("keydown",function(e){if(e.key==="Enter")go();});
 }
 
 function renderHome(){
@@ -414,6 +416,13 @@ function renderLobby(){
   bindRB(function(r){myRole=r;action({t:"update",teamId:myTeam,role:r});});
 }
 
+
+/* -- Helper: generate spy-colored board HTML (reusable) -- */
+function spyBoardHtml(){
+  if(!gs)return "";
+  return gs.board.map(function(card){var c=P[card.color];return '<div class="spy-card" style="background:'+(card.done?c.bg+"88":c.bg)+';border:1px solid '+(card.done?c.hi+"66":(c.bd||c.hi))+';border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 4px;opacity:'+(card.done ? 0.22:1)+'"><div style="font-family:'+FD+';font-size:18px;line-height:1.2;text-align:center;word-break:break-word;padding:4px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
+}
+
 function renderGame(){
   if(!gs)return;
   var m=me();var ct=curT();
@@ -451,7 +460,7 @@ function renderGame(){
 
   /* 2 — ESPÍA ACTIVO viendo adivinar: tablero colores read-only */
   if(gs.phase==="guessing"&&isCurSpy){
-    var bd2=gs.board.map(function(card){var c=P[card.color];return '<div class="spy-card" style="background:'+(card.done?c.bg+"88":c.bg)+';border:1px solid '+(card.done?c.hi+"66":(c.bd||c.hi))+';border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 4px;opacity:'+(card.done?.22:1)+'"><div style="font-family:'+FD+';font-size:18px;line-height:1.2;text-align:center;word-break:break-word;padding:4px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
+    var bd2=gs.board.map(function(card){var c=P[card.color];return '<div class="spy-card" style="background:'+(card.done?c.bg+"88":c.bg)+';border:1px solid '+(card.done?c.hi+"66":(c.bd||c.hi))+';border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 4px;opacity:'+(card.done ? 0.22:1)+'"><div style="font-family:'+FD+';font-size:18px;line-height:1.2;text-align:center;word-break:break-word;padding:4px;color:'+(card.done?"#2A2010":card.color==="assassin"?"#DD0000":c.tx)+';">'+(card.color==="assassin"&&!card.done?"☠ ":"")+card.w+'</div></div>';}).join("");
     mount(
       gameActionBar()+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;color:'+DM+';">ADIVINANDO</div><div style="font-family:'+FD+';font-size:30px;letter-spacing:2px;color:'+tc.hi+';">EQUIPO '+tc.nm+'</div></div><div style="text-align:right;"><div style="font-family:'+FD+';font-size:10px;color:'+DM+';">QUEDAN</div><div style="font-family:'+FD+';font-size:30px;">'+gs.gl+'</div></div></div>'+
@@ -481,7 +490,7 @@ function renderGame(){
     return;
   }
 
-  /* 4 — ESPECTADORES Y EQUIPO ESPERANDO: ven tablero read-only */
+  /* 4 — ESPECTADORES Y EQUIPO ESPERANDO: ven tablero read-only (colores si es spy) */
   var hdr;
   if(gs.phase==="spy"){
     hdr='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="font-size:20px;">⏳</div><div><div style="font-family:'+FD+';font-size:9px;letter-spacing:2px;color:'+DM+';">PENSANDO LA PISTA</div><div style="font-family:'+FD+';font-size:26px;letter-spacing:2px;color:'+tc.hi+';">EQUIPO '+tc.nm+'</div></div></div>';
@@ -490,10 +499,17 @@ function renderGame(){
       '<div style="display:flex;align-items:center;gap:8px;"><div style="font-size:16px;">👀</div><div><div style="font-family:'+FD+';font-size:9px;letter-spacing:2px;color:'+DM+';">ADIVINANDO</div><div style="font-family:'+FD+';font-size:26px;letter-spacing:2px;color:'+tc.hi+';">EQUIPO '+tc.nm+'</div></div></div>'+
       '<div style="text-align:right;"><div style="font-family:'+FD+';font-size:9px;color:'+DM+';">INTENTOS</div><div style="font-family:'+FD+';font-size:26px;color:'+CR+';">'+gs.gl+'</div></div></div>';
   }
+  // Si el jugador es ESPÍA, ve el tablero con colores para ir pensando su próxima jugada
+  var boardHtml;
+  if(amSpy){
+    boardHtml='<div class="word-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:12px;">'+spyBoardHtml()+'</div>';
+  }else{
+    boardHtml='<div class="word-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px;">'+wordBoard(gs.board,false)+'</div>';
+  }
   mount(
     gameActionBar()+hdr+
-    (gs.phase==="guessing"?clueBar:'')+
-    '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px;">'+wordBoard(gs.board,false)+'</div>'+
+    (gs.phase==="guessing"?clueBar:"")+
+    boardHtml+
     scoreRow+
     (gs.phase==="spy"?'<div style="font-family:'+FD+';font-size:10px;letter-spacing:2px;color:#2A2418;text-align:center;padding:8px 0;">No es tu turno 🎯</div>':'')
   );
