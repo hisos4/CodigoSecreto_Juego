@@ -331,7 +331,7 @@ function renderCreate(){
     '<div style="font-family:'+FD+';font-size:52px;line-height:.88;letter-spacing:2px;margin-bottom:22px;">CREAR<br>PARTIDA</div>'+
     lbl("TU NOMBRE")+'<input id="c-name" type="text" placeholder="NOMBRE" autocomplete="off" style="'+inpS+'margin-bottom:18px;" value="'+myName+'">'+
     lbl("TU EQUIPO")+'<div style="display:flex;gap:8px;margin-bottom:18px;">'+teamBtns(myTeam)+'</div>'+
-    lbl("TU ROL")+'<div style="display:flex;gap:8px;margin-bottom:22px;">'+roleBtns(myRole)+'</div>'/div>'+
+    lbl("TU ROL")+'<div style="display:flex;gap:8px;margin-bottom:22px;">'+roleBtns(myRole)+'</div>'+
     pBtn("CREAR SALA →","c-ok",CR,BG,0)
   );
   $("#c-bk").onclick=function(){view="home";render();};
